@@ -4,6 +4,13 @@ Eliotopy is a tactical visual assistant designed for Eliotrope players in Dofus.
 
 **Note:** To ensure account safety, this tool does not inject code or read the game client's memory. It operates entirely through game capture and a transparent overlay.
 
+## Download
+
+* [Download Eliotopy v0.0.1](https://github.com/Romain-P/Eliotopy/releases/download/stable/eliotopy.zip)
+* Extract zip files, run dofus, log your character
+* Run Eliotopy.exe
+* Start a fight, wait a few seconds and enjoy. (Menu should display at the top of the screen, down arrow)
+
 ## Technical Stack
 
 * **Language:** C++
@@ -16,7 +23,6 @@ Eliotopy is a tactical visual assistant designed for Eliotrope players in Dofus.
 * **Distance Calculation:** Real-time display of distances (in MP/cells) between active portals in the network.
 * **Interactive Menu & Keybinds:** Integrated overlay UI allowing on-the-fly modification of shortcuts (mouse and keyboard).
 * **Real-time Saving:** Configuration `.ini` file updates instantly upon any settings modification.
-
 * **Redirection Preview:** Visual representation of a redirection through a fake portal (handles equidistances, double equidistances, etc..)
 
 ## Roadmap
