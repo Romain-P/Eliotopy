@@ -17,9 +17,12 @@ Eliotopy is a tactical visual assistant designed for Eliotrope players in Dofus.
 * **Interactive Menu & Keybinds:** Integrated overlay UI allowing on-the-fly modification of shortcuts (mouse and keyboard).
 * **Real-time Saving:** Configuration `.ini` file updates instantly upon any settings modification.
 
+* **Redirection Preview:** Visual representation of a redirection through a fake portal (handles equidistances, double equidistances, etc..)
+
 ## Roadmap
 
 * **Redirection Helper:** Set a desired exit portal to highlight the specific cells where an entrance portal can be placed to validate the redirection.
-* **Redirection Preview:** Visual representation of a spell's trajectory through a fake portal
 
-And probably more...
+## Showcase
+
+<img width="699" height="644" alt="Eliotopy_u5isIh4teg" src="https://github.com/user-attachments/assets/91b4e94e-a7a6-440b-b8fc-279310764a27" />
