@@ -4,6 +4,10 @@ Eliotopy is a tactical visual assistant designed for Eliotrope players in Dofus.
 
 **Note:** To ensure account safety, this tool does not inject code or read the game client's memory. It operates entirely through game capture and a transparent overlay.
 
+## Discord
+
+* [Community Discord](https://discord.gg/xYMN5yXNkj)
+
 ## Download
 
 * [Download Eliotopy v0.0.1](https://github.com/Romain-P/Eliotopy/releases/download/stable/eliotopy.zip)
