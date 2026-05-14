@@ -1,6 +1,6 @@
-# Eliotropy - Dofus Tactical Overlay
+# Eliotopy - Dofus Tactical Overlay
 
-Eliotropy is a tactical visual assistant designed for Eliotrope players in Dofus. The project aims to simplify portal network management, distance calculation, and complex redirection planning.
+Eliotopy is a tactical visual assistant designed for Eliotrope players in Dofus. The project aims to simplify portal network management, distance calculation, and complex redirection planning.
 
 **Note:** To ensure account safety, this tool does not inject code or read the game client's memory. It operates entirely through game capture and a transparent overlay.
 
