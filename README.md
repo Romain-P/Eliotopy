@@ -10,7 +10,7 @@ Eliotopy is a tactical visual assistant designed for Eliotrope players in Dofus.
 
 ## Download
 
-* [Download Eliotopy v0.0.1](https://github.com/Romain-P/Eliotopy/releases/download/0.0.2/eliotopy.zip)
+* [Download Eliotopy v0.0.2](https://github.com/Romain-P/Eliotopy/releases/download/0.0.2/eliotopy.zip)
 * Extract zip files, run dofus, log your character
 * Run Eliotopy.exe
 * Start a fight and enjoy Eliotopy
