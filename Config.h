@@ -11,6 +11,7 @@ public:
     std::string configPath;
     KeyBind bindNextPortal = { VK_TAB, false, false, false };
     KeyBind bindClear = { VK_TAB, true, false, false };
+    KeyBind bindPreview = { VK_MBUTTON, false, false, false };
     KeyBind bindPortal[5];
 
     static std::string getDirectory() {
@@ -32,10 +33,7 @@ public:
 
         configPath = getDirectory() + "\\eliotopy_config.ini";
         std::ifstream file(configPath);
-        if (!file.is_open()) {
-            save();
-            return;
-        }
+        if (!file.is_open()) { save(); return; }
 
         std::string line;
         while (std::getline(file, line)) {
@@ -48,6 +46,7 @@ public:
             else if (key == "show_distances") showDistances = (value == "1");
             else if (key == "bind_next") bindNextPortal.fromString(value);
             else if (key == "bind_clear") bindClear.fromString(value);
+            else if (key == "bind_preview") bindPreview.fromString(value);
             else if (key == "bind_p1") bindPortal[1].fromString(value);
             else if (key == "bind_p2") bindPortal[2].fromString(value);
             else if (key == "bind_p3") bindPortal[3].fromString(value);
@@ -62,6 +61,7 @@ public:
         file << "show_distances=" << (showDistances ? "1" : "0") << "\n";
         file << "bind_next=" << bindNextPortal.toString() << "\n";
         file << "bind_clear=" << bindClear.toString() << "\n";
+        file << "bind_preview=" << bindPreview.toString() << "\n";
         file << "bind_p1=" << bindPortal[1].toString() << "\n";
         file << "bind_p2=" << bindPortal[2].toString() << "\n";
         file << "bind_p3=" << bindPortal[3].toString() << "\n";

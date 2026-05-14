@@ -16,16 +16,20 @@ public:
     bool waitingForRelease = false;
 
     cv::Rect arrowRect, panelRect, showGridRect, showDistancesRect;
-    std::array<cv::Rect, 6> bindRects;
+    std::array<cv::Rect, 7> bindRects;
 
     void updateLayout(int w, int h) {
         width = w; height = h;
         int centerX = w / 2;
-        arrowRect = cv::Rect(centerX - 24, 4, 48, 22);
-        panelRect = cv::Rect(centerX - 120, 30, 240, 290);
+
+        arrowRect = cv::Rect(centerX - 30, 4, 60, 24);
+
+        panelRect = cv::Rect(centerX - 120, 30, 240, 325);
+
         showGridRect = cv::Rect(panelRect.x + 12, panelRect.y + 12, panelRect.width - 24, 30);
         showDistancesRect = cv::Rect(panelRect.x + 12, panelRect.y + 47, panelRect.width - 24, 30);
-        for(int i = 0; i < 6; i++) {
+
+        for(int i = 0; i < 7; i++) {
             bindRects[i] = cv::Rect(panelRect.x + 12, panelRect.y + 82 + (i * 32), panelRect.width - 24, 28);
         }
     }
@@ -61,7 +65,9 @@ public:
     }
 
     void render(cv::Mat& img) {
-        cv::Scalar arrowBg = menuOpen ? cv::Scalar(65, 65, 65, 255) : cv::Scalar(40, 40, 40, 255);
+        bool arrowHovered = contains(arrowRect, mousePos);
+        cv::Scalar arrowBg = arrowHovered ? cv::Scalar(85, 85, 85, 255) : (menuOpen ? cv::Scalar(65, 65, 65, 255) : cv::Scalar(40, 40, 40, 255));
+
         cv::rectangle(img, arrowRect, arrowBg, -1, cv::LINE_AA);
         cv::rectangle(img, arrowRect, cv::Scalar(0, 165, 255, 255), 1, cv::LINE_AA);
 
@@ -80,10 +86,10 @@ public:
         drawButton(img, showGridRect, "Show Grid", config->showGrid ? "ON" : "OFF", contains(showGridRect, mousePos), false);
         drawButton(img, showDistancesRect, "Show Distances", config->showDistances ? "ON" : "OFF", contains(showDistancesRect, mousePos), false);
 
-        std::string labels[6] = { "Next Portal", "Clear All", "Portal 1", "Portal 2", "Portal 3", "Portal 4" };
-        KeyBind* binds[6] = { &config->bindNextPortal, &config->bindClear, &config->bindPortal[1], &config->bindPortal[2], &config->bindPortal[3], &config->bindPortal[4] };
+        std::string labels[7] = { "Next Portal", "Clear All", "Preview Mod", "Portal 1", "Portal 2", "Portal 3", "Portal 4" };
+        KeyBind* binds[7] = { &config->bindNextPortal, &config->bindClear, &config->bindPreview, &config->bindPortal[1], &config->bindPortal[2], &config->bindPortal[3], &config->bindPortal[4] };
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 7; i++) {
             std::string valStr = (capturingBindIndex == i) ? "PRESS KEY..." : binds[i]->getDisplayName();
             drawButton(img, bindRects[i], labels[i], valStr, contains(bindRects[i], mousePos), capturingBindIndex == i);
         }
@@ -107,10 +113,7 @@ public:
                     vk == VK_LWIN || vk == VK_RWIN) continue;
 
                 if (GetAsyncKeyState(vk) & 0x8000) {
-                    if (vk == VK_ESCAPE) {
-                        capturingBindIndex = -1;
-                        break;
-                    }
+                    if (vk == VK_ESCAPE) { capturingBindIndex = -1; break; }
 
                     KeyBind newBind;
                     newBind.vkCode = vk;
@@ -120,8 +123,9 @@ public:
 
                     if (capturingBindIndex == 0) config->bindNextPortal = newBind;
                     else if (capturingBindIndex == 1) config->bindClear = newBind;
-                    else if (capturingBindIndex >= 2 && capturingBindIndex <= 5)
-                        config->bindPortal[capturingBindIndex - 1] = newBind;
+                    else if (capturingBindIndex == 2) config->bindPreview = newBind;
+                    else if (capturingBindIndex >= 3 && capturingBindIndex <= 6)
+                        config->bindPortal[capturingBindIndex - 2] = newBind;
 
                     config->save();
                     capturingBindIndex = -1;
@@ -145,10 +149,6 @@ inline LRESULT CALLBACK globalOverlayProc(HWND hwnd, UINT msg, WPARAM wParam, LP
     if (msg == WM_MOUSEMOVE) {
         if (g_overlayUI) {
             g_overlayUI->mousePos = cv::Point(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-            if (g_overlayUI->contains(g_overlayUI->arrowRect, g_overlayUI->mousePos) ||
-                g_overlayUI->contains(g_overlayUI->panelRect, g_overlayUI->mousePos)) {
-                g_overlayUI->menuOpen = true;
-            }
             TRACKMOUSEEVENT tme = { sizeof(TRACKMOUSEEVENT), TME_LEAVE, hwnd, 0 };
             TrackMouseEvent(&tme);
         }
@@ -156,19 +156,22 @@ inline LRESULT CALLBACK globalOverlayProc(HWND hwnd, UINT msg, WPARAM wParam, LP
     }
     if (msg == WM_MOUSELEAVE) {
         if (g_overlayUI) {
-            POINT pt; GetCursorPos(&pt);
-            ScreenToClient(hwnd, &pt);
-            cv::Point p(pt.x, pt.y);
-            if (!g_overlayUI->contains(g_overlayUI->arrowRect, p) && !g_overlayUI->contains(g_overlayUI->panelRect, p)) {
-                g_overlayUI->menuOpen = false;
-                g_overlayUI->mousePos = cv::Point(-1, -1);
-            }
+            g_overlayUI->mousePos = cv::Point(-1, -1);
         }
         return 0;
     }
     if (msg == WM_LBUTTONDOWN) {
-        if (!g_overlayUI || !g_overlayUI->config || !g_overlayUI->menuOpen || g_overlayUI->capturingBindIndex != -1) return 0;
+        if (!g_overlayUI || !g_overlayUI->config || g_overlayUI->capturingBindIndex != -1) return 0;
+
         cv::Point p(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
+        if (g_overlayUI->contains(g_overlayUI->arrowRect, p)) {
+            g_overlayUI->menuOpen = !g_overlayUI->menuOpen;
+            return 0;
+        }
+
+        if (!g_overlayUI->menuOpen) return 0;
+
         if (g_overlayUI->contains(g_overlayUI->showGridRect, p)) {
             g_overlayUI->config->showGrid = !g_overlayUI->config->showGrid;
             g_overlayUI->config->save();
@@ -176,7 +179,7 @@ inline LRESULT CALLBACK globalOverlayProc(HWND hwnd, UINT msg, WPARAM wParam, LP
             g_overlayUI->config->showDistances = !g_overlayUI->config->showDistances;
             g_overlayUI->config->save();
         } else {
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < 7; i++) {
                 if (g_overlayUI->contains(g_overlayUI->bindRects[i], p)) {
                     g_overlayUI->capturingBindIndex = i;
                     g_overlayUI->waitingForRelease = true;

@@ -78,4 +78,20 @@ public:
         cv::putText(img, text, origin, cv::FONT_HERSHEY_DUPLEX, 1.1, cv::Scalar(15, 15, 15, 255), 6, cv::LINE_AA);
         cv::putText(img, text, origin, cv::FONT_HERSHEY_DUPLEX, 1.1, color, 2, cv::LINE_AA);
     }
+
+    static void drawRedirectionPath(cv::Mat& img, const std::vector<SnappedPortal>& path, const IsoGrid& grid) {
+        if (path.size() < 2) return;
+
+        cv::Scalar arrowColor(255, 255, 255, 200);
+        cv::Scalar exitHighlightColor(0, 255, 0, 255);
+
+        for (size_t i = 0; i < path.size() - 1; i++) {
+            cv::Point p1 = path[i].cell.center;
+            cv::Point p2 = path[i+1].cell.center;
+            cv::arrowedLine(img, p1, p2, arrowColor, 3, cv::LINE_AA, 0, 0.05);
+        }
+
+        cv::Point exitPt = path.back().cell.center;
+        drawDiamond(img, exitPt, grid.tileWidth + 12, grid.tileHeight + 12, exitHighlightColor, 4);
+    }
 };
