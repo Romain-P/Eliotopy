@@ -31,7 +31,7 @@ Eliotopy is a tactical visual assistant designed for Eliotrope players in Dofus.
 * **Redirection Helper:** Set a desired exit portal to highlight the specific cells where an entrance portal can be placed to validate the redirection.
 
 ## Roadmap
-* **Portal detection: ** scans pixels for portals & OCR for portal numbers
+* **Portal detection:** scans pixels for portals & OCR for portal numbers
 
 ## Showcase
 
