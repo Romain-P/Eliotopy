@@ -13,7 +13,11 @@ private:
 
     IsoGrid lockedGrid;
     IsoGrid pendingGrid;
+
     int pendingFrames = 0;
+    bool permanentlyLocked = false;
+
+    const int FRAMES_TO_LOCK = 20;
 
     const cv::Vec3i GREEN_OUTER_BGR = cv::Vec3i(4, 163, 60);
     const cv::Vec3i GREEN_CENTER_BGR = cv::Vec3i(66, 194, 129);
@@ -169,25 +173,36 @@ private:
     }
 
 public:
+    bool isLocked() const { return permanentlyLocked; }
+    bool isLoading() const { return pendingFrames > 0 && !permanentlyLocked; }
+
     IsoGrid detect(const cv::Mat& frame) {
-        DetectionSample s = extractCells(frame);
-        if (lockedGrid.valid) {
-            if (s.centers.size() < 4) return lockedGrid;
-            IsoGrid v = buildGrid(s.centers, lockedGrid.origin, lockedGrid.tileWidth, lockedGrid.tileHeight, 13.0);
-            if (v.valid && v.avgSnapError <= 9.5) {
-                lockedGrid.greenCells = v.greenCells;
-                return lockedGrid;
-            }
+        if (permanentlyLocked) {
+            return lockedGrid;
         }
+
+        if (frame.empty()) return pendingGrid;
+
+        DetectionSample s = extractCells(frame);
+
         if (s.centers.size() >= 4) {
             IsoGrid c = fitGrid(s);
             if (c.valid) {
-                if (pendingFrames++ >= 5) {
+                pendingFrames++;
+                pendingGrid = c;
+
+                if (pendingFrames >= FRAMES_TO_LOCK) {
+                    permanentlyLocked = true;
                     lockedGrid = c;
                     pendingFrames = 0;
                 }
-            } else pendingFrames = 0;
+            } else {
+                pendingFrames = 0;
+            }
+        } else {
+            pendingFrames = 0;
         }
-        return lockedGrid;
+
+        return permanentlyLocked ? lockedGrid : pendingGrid;
     }
 };
